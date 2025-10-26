@@ -1,0 +1,7 @@
+/build/*
+*.pkg
+*.zip
+*.dmg
+*.exe
+.DS_Store
+/utils/codesign.env
