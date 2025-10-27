@@ -23,7 +23,7 @@ def get_project_version():
             content = f.read()
             
         # Look for project(smoothie VERSION x.y.z) pattern
-        version_match = re.search(r'project\s*\(\s*returner\s+VERSION\s+([0-9]+\.[0-9]+\.[0-9]+)', content, re.IGNORECASE)
+        version_match = re.search(r'project\s*\(\s*retuner\s+VERSION\s+([0-9]+\.[0-9]+\.[0-9]+)', content, re.IGNORECASE)
         
         if version_match:
             return version_match.group(1)
