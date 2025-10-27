@@ -40,9 +40,9 @@ Style::Style()
 }
 
 void Style::drawButtonBackground (juce::Graphics& g, juce::Button& button,
-                                              const juce::Colour& backgroundColour,
-                                              bool shouldDrawButtonAsHighlighted,
-                                              bool shouldDrawButtonAsDown)
+                                  const juce::Colour& backgroundColour,
+                                  bool shouldDrawButtonAsHighlighted,
+                                  bool shouldDrawButtonAsDown)
 {
     auto bounds = button.getLocalBounds().toFloat().reduced (1.0f);
 
@@ -58,8 +58,8 @@ void Style::drawButtonBackground (juce::Graphics& g, juce::Button& button,
 }
 
 void Style::drawButtonText (juce::Graphics& g, juce::TextButton& button,
-                                        bool shouldDrawButtonAsHighlighted,
-                                        bool shouldDrawButtonAsDown)
+                            bool shouldDrawButtonAsHighlighted,
+                            bool shouldDrawButtonAsDown)
 {
     auto font = getTextButtonFont (button, button.getHeight());
     g.setFont (font);
@@ -86,8 +86,8 @@ void Style::drawButtonText (juce::Graphics& g, juce::TextButton& button,
 }
 
 void Style::drawRotarySlider (juce::Graphics& g, int x, int y, int width, int height,
-                                          float sliderPos, float rotaryStartAngle, float rotaryEndAngle,
-                                          juce::Slider& slider)
+                              float sliderPos, float rotaryStartAngle, float rotaryEndAngle,
+                              juce::Slider& slider)
 {
     auto bounds = juce::Rectangle<int> (x, y, width, height).toFloat().reduced (10);
     auto radius = juce::jmin (bounds.getWidth(), bounds.getHeight()) / 2.0f;
@@ -128,8 +128,8 @@ void Style::drawRotarySlider (juce::Graphics& g, int x, int y, int width, int he
 }
 
 void Style::drawLinearSlider (juce::Graphics& g, int x, int y, int width, int height,
-                                          float sliderPos, float minSliderPos, float maxSliderPos,
-                                          juce::Slider::SliderStyle style, juce::Slider& slider)
+                              float sliderPos, float minSliderPos, float maxSliderPos,
+                              juce::Slider::SliderStyle style, juce::Slider& slider)
 {
     // DJ Mixer style vertical fader
     if (style == juce::Slider::LinearVertical) {
@@ -203,8 +203,8 @@ void Style::drawLinearSlider (juce::Graphics& g, int x, int y, int width, int he
 }
 
 void Style::drawToggleButton (juce::Graphics& g, juce::ToggleButton& button,
-                                          bool shouldDrawButtonAsHighlighted,
-                                          bool shouldDrawButtonAsDown)
+                              bool shouldDrawButtonAsHighlighted,
+                              bool shouldDrawButtonAsDown)
 {
     auto fontSize = juce::jmin (15.0f, static_cast<float> (button.getHeight()) * 0.75f);
     auto tickWidth = fontSize * 1.1f;
@@ -224,9 +224,9 @@ void Style::drawToggleButton (juce::Graphics& g, juce::ToggleButton& button,
 }
 
 void Style::drawTickBox (juce::Graphics& g, juce::Component& component,
-                                     float x, float y, float w, float h,
-                                     bool ticked, bool isEnabled, bool shouldDrawButtonAsHighlighted,
-                                     bool shouldDrawButtonAsDown)
+                         float x, float y, float w, float h,
+                         bool ticked, bool isEnabled, bool shouldDrawButtonAsHighlighted,
+                         bool shouldDrawButtonAsDown)
 {
     auto bounds = juce::Rectangle<float> (x, y, w, h).reduced (2.0f);
     auto cornerSize = 4.0f;
@@ -287,8 +287,8 @@ void Style::drawLabel (juce::Graphics& g, juce::Label& label)
 }
 
 void Style::drawComboBox (juce::Graphics& g, int width, int height, bool isButtonDown,
-                                      int buttonX, int buttonY, int buttonW, int buttonH,
-                                      juce::ComboBox& comboBox)
+                          int buttonX, int buttonY, int buttonW, int buttonH,
+                          juce::ComboBox& comboBox)
 {
     auto cornerSize = 8.0f;
     auto bounds = juce::Rectangle<int> (0, 0, width, height).toFloat();
@@ -335,16 +335,16 @@ void Style::drawPopupMenuBackground (juce::Graphics& g, int width, int height)
 }
 
 void Style::drawPopupMenuBackgroundWithOptions (juce::Graphics& g, int width, int height,
-                                                            const juce::PopupMenu::Options& options)
+                                                const juce::PopupMenu::Options& options)
 {
     drawPopupMenuBackground (g, width, height);
 }
 
 void Style::drawPopupMenuItem (juce::Graphics& g, const juce::Rectangle<int>& area,
-                                           bool isSeparator, bool isActive, bool isHighlighted,
-                                           bool isTicked, bool hasSubMenu, const juce::String& text,
-                                           const juce::String& shortcutKeyText, const juce::Drawable* icon,
-                                           const juce::Colour* textColour)
+                               bool isSeparator, bool isActive, bool isHighlighted,
+                               bool isTicked, bool hasSubMenu, const juce::String& text,
+                               const juce::String& shortcutKeyText, const juce::Drawable* icon,
+                               const juce::Colour* textColour)
 {
     if (isSeparator) {
         // Draw separator line
@@ -361,9 +361,9 @@ void Style::drawPopupMenuItem (juce::Graphics& g, const juce::Rectangle<int>& ar
             g.setColour (juce::Colour (ACCENT_TEAL).withAlpha (0.15f));
             g.fillRect (r);
 
-            // Subtle left border accent
+            // Subtle left border accent (draw without modifying r to avoid text shift)
             g.setColour (juce::Colour (ACCENT_TEAL));
-            g.fillRect (r.removeFromLeft (2));
+            g.fillRect (r.getX(), r.getY(), 2, r.getHeight());
         }
 
         // Text color
@@ -390,9 +390,11 @@ void Style::drawPopupMenuItem (juce::Graphics& g, const juce::Rectangle<int>& ar
             auto tickBounds = textBounds.removeFromLeft (area.getHeight()).toFloat();
 
             juce::Path tick;
-            tick.startNewSubPath (tickBounds.getX() + 4.0f, tickBounds.getCentreY());
-            tick.lineTo (tickBounds.getCentreX(), tickBounds.getBottom() - 6.0f);
-            tick.lineTo (tickBounds.getRight() - 4.0f, tickBounds.getY() + 4.0f);
+            auto checkWidth = tickBounds.getWidth() * 0.6f;
+            auto checkLeft = tickBounds.getCentreX() - checkWidth * 0.5f;
+            tick.startNewSubPath (checkLeft, tickBounds.getCentreY());
+            tick.lineTo (checkLeft + checkWidth * 0.4f, tickBounds.getBottom() - 6.0f);
+            tick.lineTo (checkLeft + checkWidth, tickBounds.getY() + 4.0f);
 
             g.setColour (juce::Colour (ACCENT_TEAL));
             g.strokePath (tick, juce::PathStrokeType (2.0f, juce::PathStrokeType::curved, juce::PathStrokeType::rounded));
@@ -427,8 +429,8 @@ void Style::drawPopupMenuItem (juce::Graphics& g, const juce::Rectangle<int>& ar
 }
 
 void Style::drawRoundedButton (juce::Graphics& g, const juce::Rectangle<float>& bounds,
-                                           juce::Colour fillColour, juce::Colour outlineColour,
-                                           float cornerRadius) const
+                               juce::Colour fillColour, juce::Colour outlineColour,
+                               float cornerRadius) const
 {
     g.setColour (fillColour);
     g.fillRoundedRectangle (bounds, cornerRadius);
@@ -438,7 +440,7 @@ void Style::drawRoundedButton (juce::Graphics& g, const juce::Rectangle<float>& 
 }
 
 void Style::drawDigitalDisplay (juce::Graphics& g, const juce::Rectangle<float>& bounds,
-                                            const juce::String& text) const
+                                const juce::String& text) const
 {
     // Draw dark background for digital display
     g.setColour (juce::Colour (BACKGROUND_DARKER));
@@ -459,8 +461,8 @@ void Style::drawDigitalDisplay (juce::Graphics& g, const juce::Rectangle<float>&
 }
 
 void Style::drawAlertBox (juce::Graphics& g, juce::AlertWindow& alert,
-                                      const juce::Rectangle<int>& textArea,
-                                      juce::TextLayout& textLayout)
+                          const juce::Rectangle<int>& textArea,
+                          juce::TextLayout& textLayout)
 {
     auto bounds = alert.getLocalBounds().toFloat();
 

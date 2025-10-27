@@ -190,11 +190,11 @@ void Editor::resized()
     auto headerArea = bounds.removeFromTop (headerHeight);
 
     // Title centered in header (apply horizontal margins only to title)
-    auto titleBounds = headerArea.reduced (26, 0);
+    auto titleBounds = headerArea.reduced (12, 0);
 
     // Combobox on right side of header
-    auto comboBounds = titleBounds.removeFromRight (120);
-    comboBounds = comboBounds.withSizeKeepingCentre (120, 24);
+    auto comboBounds = titleBounds.removeFromRight (180);
+    comboBounds = comboBounds.withSizeKeepingCentre (180, 24);
     _programs.setBounds (comboBounds);
 
     // Give title the remaining space
