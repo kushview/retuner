@@ -290,7 +290,7 @@ void Style::drawComboBox (juce::Graphics& g, int width, int height, bool isButto
                           int buttonX, int buttonY, int buttonW, int buttonH,
                           juce::ComboBox& comboBox)
 {
-    auto cornerSize = 8.0f;
+    auto cornerSize = 2.0f;
     auto bounds = juce::Rectangle<int> (0, 0, width, height).toFloat();
 
     // Background with dark theme
@@ -322,6 +322,14 @@ void Style::drawComboBox (juce::Graphics& g, int width, int height, bool isButto
 
     g.setColour (juce::Colour (ACCENT_TEAL).withAlpha (comboBox.isEnabled() ? 0.9f : 0.3f));
     g.strokePath (arrow, juce::PathStrokeType (2.0f, juce::PathStrokeType::curved, juce::PathStrokeType::rounded));
+}
+
+void Style::positionComboBoxText (juce::ComboBox& box, juce::Label& label)
+{
+    label.setBounds (1 + 4, 1,
+                     box.getWidth() - 30,
+                     box.getHeight() - 2);
+    label.setFont (getComboBoxFont (box));
 }
 
 void Style::drawPopupMenuBackground (juce::Graphics& g, int width, int height)

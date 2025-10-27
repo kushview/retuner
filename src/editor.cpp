@@ -193,8 +193,9 @@ void Editor::resized()
     auto titleBounds = headerArea.reduced (12, 0);
 
     // Combobox on right side of header
-    auto comboBounds = titleBounds.removeFromRight (180);
-    comboBounds = comboBounds.withSizeKeepingCentre (180, 24);
+    const int comboWidth = 260;
+    auto comboBounds = titleBounds.removeFromRight (comboWidth);
+    comboBounds = comboBounds.withSizeKeepingCentre (comboWidth, 24);
     _programs.setBounds (comboBounds);
 
     // Give title the remaining space
@@ -282,6 +283,7 @@ void Editor::updateVolumeDisplay()
 
 void Editor::updatePrograms()
 {
+    _programs.onChange = nullptr;
     _programs.clear (juce::dontSendNotification);
     _programs.setTextWhenNothingSelected ("Program");
     const auto current = _processor.getCurrentProgram();

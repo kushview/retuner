@@ -54,6 +54,8 @@ public:
                        int buttonX, int buttonY, int buttonW, int buttonH,
                        juce::ComboBox& comboBox) override;
 
+    void positionComboBoxText (juce::ComboBox& box, juce::Label& label) override;
+
     // Popup menu styling
     void drawPopupMenuBackground (juce::Graphics& g, int width, int height) override;
 
