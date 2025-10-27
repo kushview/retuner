@@ -29,8 +29,6 @@ public:
     void getStateInformation (juce::MemoryBlock&) override;
     void setStateInformation (const void*, int) override;
 
-    // Required by JUCE's AudioProcessor API
-    int _program { 0 };
     int getNumPrograms() override;
     int getCurrentProgram() override;
     void setCurrentProgram (int index) override;
@@ -41,12 +39,14 @@ public:
     bool producesMidi() const override;
     double getTailLengthSeconds() const override;
 
-    juce::AudioProcessorValueTreeState parameters;
-
     // AudioProcessorValueTreeState::Listener implementation
     void parameterChanged (const juce::String& parameterID, float newValue) override;
 
+    auto& parameters() noexcept { return _parameters; }
+
 private:
+    juce::AudioProcessorValueTreeState _parameters;
+    int _program { 0 };
     double _sampleRate = 44100.0;
     int _samplesPerBlock = 512;
 

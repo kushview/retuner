@@ -20,17 +20,17 @@ inline static void applyTuning (const Tuning& t, juce::AudioProcessorValueTreeSt
 
 Processor::Processor()
     : AudioProcessor (BusesProperties().withInput ("Input", juce::AudioChannelSet::stereo(), true).withOutput ("Output", juce::AudioChannelSet::stereo(), true)),
-      parameters (*this, nullptr, params::PARAMS_TYPE, createParams())
+      _parameters (*this, nullptr, params::PARAMS_TYPE, createParams())
 {
-    _sourceA4Freq = parameters.getRawParameterValue (params::SOURCE_A4_FREQUENCY);
-    _targetA4Freq = parameters.getRawParameterValue (params::TARGET_A4_FREQUENCY);
-    _volumeDb = parameters.getRawParameterValue (params::VOLUME_DB);
-    parameters.addParameterListener (params::VOLUME_DB, this);
+    _sourceA4Freq = _parameters.getRawParameterValue (params::SOURCE_A4_FREQUENCY);
+    _targetA4Freq = _parameters.getRawParameterValue (params::TARGET_A4_FREQUENCY);
+    _volumeDb = _parameters.getRawParameterValue (params::VOLUME_DB);
+    _parameters.addParameterListener (params::VOLUME_DB, this);
 }
 
 Processor::~Processor()
 {
-    parameters.removeParameterListener (params::VOLUME_DB, this);
+    _parameters.removeParameterListener (params::VOLUME_DB, this);
 }
 
 juce::AudioProcessorValueTreeState::ParameterLayout Processor::createParams()
@@ -109,7 +109,7 @@ bool Processor::isBusesLayoutSupported (const BusesLayout& layouts) const
 
 void Processor::getStateInformation (juce::MemoryBlock& block)
 {
-    const auto tree = parameters.copyState();
+    const auto tree = _parameters.copyState();
     juce::MemoryOutputStream ms (block, false);
     {
         juce::GZIPCompressorOutputStream gz (ms);
@@ -122,7 +122,7 @@ void Processor::setStateInformation (const void* data, int size)
 {
     const auto tree = juce::ValueTree::readFromGZIPData (data, static_cast<size_t> (size));
     if (tree.isValid() && tree.hasType (params::PARAMS_TYPE)) {
-        parameters.replaceState (tree);
+        _parameters.replaceState (tree);
     }
 }
 
@@ -139,7 +139,7 @@ void Processor::setCurrentProgram (int program)
     if (program < 0 || index >= Tuning::factory().size())
         return;
     _program = program;
-    detail::applyTuning (Tuning::factory()[index], parameters);
+    detail::applyTuning (Tuning::factory()[index], _parameters);
 }
 
 const juce::String Processor::getProgramName (int program)

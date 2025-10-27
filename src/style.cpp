@@ -326,9 +326,7 @@ void Style::drawComboBox (juce::Graphics& g, int width, int height, bool isButto
 
 void Style::positionComboBoxText (juce::ComboBox& box, juce::Label& label)
 {
-    label.setBounds (1 + 4, 1,
-                     box.getWidth() - 30,
-                     box.getHeight() - 2);
+    label.setBounds (1 + 4, 1, box.getWidth() - 30, box.getHeight() - 2);
     label.setFont (getComboBoxFont (box));
 }
 

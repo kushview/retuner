@@ -377,7 +377,7 @@ bool AudioEngine::isReTunerEnabled() const
 void AudioEngine::setSourceFrequency (float frequency)
 {
     if (_retunerProcessor)
-        if (auto* p = _retunerProcessor->parameters.getParameter (retuner::params::SOURCE_A4_FREQUENCY))
+        if (auto* p = _retunerProcessor->parameters().getParameter (retuner::params::SOURCE_A4_FREQUENCY))
             if (auto* param = dynamic_cast<juce::AudioParameterFloat*> (p))
                 *param = frequency;
 }
@@ -385,7 +385,7 @@ void AudioEngine::setSourceFrequency (float frequency)
 float AudioEngine::sourceFrequency() const noexcept
 {
     if (_retunerProcessor)
-        if (auto* p = _retunerProcessor->parameters.getParameter (retuner::params::SOURCE_A4_FREQUENCY))
+        if (auto* p = _retunerProcessor->parameters().getParameter (retuner::params::SOURCE_A4_FREQUENCY))
             if (auto* param = dynamic_cast<juce::AudioParameterFloat*> (p))
                 return param->get();
     return 440.f;
@@ -394,7 +394,7 @@ float AudioEngine::sourceFrequency() const noexcept
 void AudioEngine::setTargetFrequency (float frequency)
 {
     if (_retunerProcessor)
-        if (auto* p = _retunerProcessor->parameters.getParameter (retuner::params::TARGET_A4_FREQUENCY))
+        if (auto* p = _retunerProcessor->parameters().getParameter (retuner::params::TARGET_A4_FREQUENCY))
             if (auto* param = dynamic_cast<juce::AudioParameterFloat*> (p))
                 *param = frequency;
 }
@@ -402,7 +402,7 @@ void AudioEngine::setTargetFrequency (float frequency)
 float AudioEngine::targetFrequency() const noexcept
 {
     if (_retunerProcessor)
-        if (auto* p = _retunerProcessor->parameters.getParameter (retuner::params::TARGET_A4_FREQUENCY))
+        if (auto* p = _retunerProcessor->parameters().getParameter (retuner::params::TARGET_A4_FREQUENCY))
             if (auto* param = dynamic_cast<juce::AudioParameterFloat*> (p))
                 return param->get();
     return 432.f;

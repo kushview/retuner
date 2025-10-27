@@ -71,9 +71,9 @@ Editor::Editor (Processor& p)
     _volumeDisplay.setJustificationType (juce::Justification::centred);
     addAndMakeVisible (_volumeDisplay);
 
-    _sourceFreqAttachment = std::make_unique<SliderAttachment> (_processor.parameters, params::SOURCE_A4_FREQUENCY, _sourceFreqSlider);
-    _targetFreqAttachment = std::make_unique<SliderAttachment> (_processor.parameters, params::TARGET_A4_FREQUENCY, _targetFreqSlider);
-    _volumeAttachment = std::make_unique<SliderAttachment> (_processor.parameters, params::VOLUME_DB, _volumeSlider);
+    _sourceFreqAttachment = std::make_unique<SliderAttachment> (_processor.parameters(), params::SOURCE_A4_FREQUENCY, _sourceFreqSlider);
+    _targetFreqAttachment = std::make_unique<SliderAttachment> (_processor.parameters(), params::TARGET_A4_FREQUENCY, _targetFreqSlider);
+    _volumeAttachment = std::make_unique<SliderAttachment> (_processor.parameters(), params::VOLUME_DB, _volumeSlider);
 
     setupColors();
     updateSourceFreqDisplay();
@@ -180,10 +180,10 @@ void Editor::resized()
     auto faderWidth = 90;
 
     auto totalWidth = freqSection.getWidth();
-    auto displaySpacing = (totalWidth - (faderWidth * 3)) / 2; 
+    auto displaySpacing = (totalWidth - (faderWidth * 3)) / 2;
 
-    const int controlHeight = knobSize;   
-    const int displayVerticalOffset = labelHeight + 8 + controlHeight + 12; 
+    const int controlHeight = knobSize;
+    const int displayVerticalOffset = labelHeight + 8 + controlHeight + 12;
 
     auto sourceArea = freqSection.removeFromLeft (faderWidth);
     _sourceFreqLabel.setBounds (sourceArea.removeFromTop (labelHeight));
