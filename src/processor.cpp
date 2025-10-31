@@ -26,6 +26,8 @@ Processor::Processor()
     _targetA4Freq = _parameters.getRawParameterValue (params::TARGET_A4_FREQUENCY);
     _volumeDb = _parameters.getRawParameterValue (params::VOLUME_DB);
     _parameters.addParameterListener (params::VOLUME_DB, this);
+    _smoothGain.reset (44100.0, 0.2);
+    _smoothGain.setCurrentAndTargetValue (1.f);
 }
 
 Processor::~Processor()
@@ -56,6 +58,10 @@ void Processor::prepareToPlay (double sampleRate_, int samplesPerBlock)
     spec.numChannels = static_cast<juce::uint32> (juce::jmax (getTotalNumInputChannels(), getTotalNumOutputChannels()));
 
     _pitchShifter.prepare (spec);
+
+    _smoothGain.reset (sampleRate_, 0.2);
+    const auto gain = juce::Decibels::decibelsToGain (_parameters.getRawParameterValue (params::VOLUME_DB)->load());
+    _smoothGain.setTargetValue (gain);
 }
 
 void Processor::releaseResources()
@@ -66,7 +72,7 @@ void Processor::releaseResources()
 void Processor::processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer&)
 {
     juce::ScopedNoDenormals noDenormals;
-
+    const int numSamples = buffer.getNumSamples();
     const auto totalNumInputChannels = getTotalNumInputChannels();
     const auto totalNumOutputChannels = getTotalNumOutputChannels();
 
@@ -85,10 +91,17 @@ void Processor::processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer
     juce::dsp::ProcessContextReplacing<float> context (block);
     _pitchShifter.process (context);
 
-    // Apply volume gain
-    const auto volumeGain = _volumeGain.load();
-    if (volumeGain != 1.0f) {
-        buffer.applyGain (volumeGain);
+    // Apply smoothed volume gain - check for target changes in a thread-safe way
+    const auto targetGain = _targetGain.load();
+    if (! juce::approximatelyEqual (targetGain, _smoothGain.getTargetValue())) {
+        _smoothGain.setTargetValue (targetGain);
+    }
+
+    if (_smoothGain.isSmoothing()) {
+        _smoothGain.applyGain (buffer, numSamples);
+    } else {
+        // If not smoothing, apply the current gain directly for efficiency
+        buffer.applyGain (_smoothGain.getCurrentValue());
     }
 }
 
@@ -160,8 +173,9 @@ double Processor::getTailLengthSeconds() const { return 0.0; }
 void Processor::parameterChanged (const juce::String& parameterID, float newValue)
 {
     if (parameterID == params::VOLUME_DB) {
-        // Convert dB to linear gain using JUCE's helper
-        _volumeGain.store (juce::Decibels::decibelsToGain (newValue));
+        // Convert dB to linear gain and store atomically for the audio thread
+        const auto gain = juce::Decibels::decibelsToGain (newValue);
+        _targetGain.store (gain);
     }
 }
 

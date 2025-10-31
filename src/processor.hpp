@@ -59,7 +59,8 @@ private:
     std::atomic<float>* _volumeDb { nullptr };
 
     // Cached gain value for audio thread
-    std::atomic<float> _volumeGain { 1.0f };
+    std::atomic<float> _targetGain { 1.0f };
+    juce::LinearSmoothedValue<float> _smoothGain;
 
     juce::AudioProcessorValueTreeState::ParameterLayout createParams();
 
