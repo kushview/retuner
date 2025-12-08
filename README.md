@@ -25,6 +25,13 @@ reTuner uses CMake for its build system.
 - C++20 compatible compiler
 - Ninja (optional, but recommended for faster builds)
 
+#### Submodules
+JUCE, CLAP and RubberBand are provided as git submodules, make sure to initialize them:
+
+```bash
+git submodule update --init --recursive
+```
+
 ### Build Instructions
 
 1.  **Configure the project:**
