@@ -42,7 +42,8 @@ target_link_libraries(reTunerApp PRIVATE
     juce::juce_audio_processors
     juce::juce_audio_utils
     juce::juce_dsp
-    juce::juce_product_unlocking
+    juce::juce_recommended_config_flags
+    juce::juce_recommended_lto_flags
     rubberband
 )
 

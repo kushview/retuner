@@ -33,7 +33,6 @@ set(RUBBERBAND_FOUND TRUE)
 if(PROJECT_IS_TOP_LEVEL)
     add_subdirectory(deps/JUCE EXCLUDE_FROM_ALL)
     add_subdirectory(deps/clap-juce-extensions EXCLUDE_FROM_ALL)
-    include_directories(deps/libkv-auth/include)
 endif()
 
 set(RETUNER_JUCE_OPTIONS
@@ -90,9 +89,9 @@ target_compile_definitions(reTuner PRIVATE
 
 target_link_libraries(reTuner PRIVATE
     juce::juce_audio_processors
-    juce::juce_audio_utils
-    juce::juce_audio_devices
     juce::juce_dsp
+    juce::juce_recommended_config_flags
+    juce::juce_recommended_lto_flags
     rubberband
 )
 
