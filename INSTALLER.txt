@@ -1,0 +1,1 @@
+reTuner is a precision audio pitch shifting plugin designed to convert music between different tuning standards. It allows you to seamlessly shift the pitch of audio from one reference frequency (e.g., A440) to another (e.g., A432), preserving the character and formants of the original recording.

@@ -98,3 +98,46 @@ target_link_libraries(reTuner
 
 add_subdirectory(src/app)
 add_subdirectory(test)
+
+# Install targets
+install(TARGETS reTuner_VST3 
+    COMPONENT VST3
+    DESTINATION "Library/Audio/Plug-Ins/VST3")
+
+install(TARGETS reTuner_LV2 
+    COMPONENT LV2
+    DESTINATION "Library/Audio/Plug-Ins/LV2")
+
+install(TARGETS reTuner_CLAP 
+    COMPONENT CLAP
+    DESTINATION "Library/Audio/Plug-Ins/CLAP")
+
+install(TARGETS reTuner_AU 
+    COMPONENT AU
+    DESTINATION "Library/Audio/Plug-Ins/Components")
+
+install(TARGETS reTunerApp 
+    COMPONENT Standalone
+    DESTINATION "Applications")
+
+# CPack configuration
+set(CPACK_PACKAGE_NAME "reTuner")
+set(CPACK_PACKAGE_VERSION "${PROJECT_VERSION}")
+set(CPACK_PACKAGE_VENDOR "Kushview")
+set(CPACK_PACKAGE_HOMEPAGE_URL "https://kushview.net")
+set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "ReTuner audio plugin and application")
+set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_SOURCE_DIR}/LICENSE.txt")
+set(CPACK_RESOURCE_FILE_README "${CMAKE_SOURCE_DIR}/INSTALLER.txt")
+
+set(CPACK)
+if(APPLE)
+    set(CMAKE_INSTALL_PREFIX "/")
+    set(CPACK_GENERATOR "productbuild")
+    set(CPACK_PRODUCTBUILD_IDENTIFIER "net.kushview.installer.retuner")
+elseif(WIN32)
+    set(CPACK_GENERATOR "ZIP")
+else()
+    set(CPACK_GENERATOR "TGZ")
+endif()
+
+include(CPack)
