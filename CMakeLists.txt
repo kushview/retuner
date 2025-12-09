@@ -112,9 +112,11 @@ install(TARGETS reTuner_CLAP
     COMPONENT CLAP
     DESTINATION "Library/Audio/Plug-Ins/CLAP")
 
-install(TARGETS reTuner_AU 
-    COMPONENT AU
-    DESTINATION "Library/Audio/Plug-Ins/Components")
+if(APPLE AND NOT IOS)
+    install(TARGETS reTuner_AU 
+        COMPONENT AU
+        DESTINATION "Library/Audio/Plug-Ins/Components")
+endif()
 
 install(TARGETS reTunerApp 
     COMPONENT Standalone
