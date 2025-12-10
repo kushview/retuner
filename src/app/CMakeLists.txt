@@ -29,6 +29,13 @@ target_sources(reTunerApp PRIVATE
     ../style.cpp
 )
 
+if(MSVC)
+    target_compile_options(reTunerApp PRIVATE
+        /wd4996  # Disable deprecation warnings (JUCE AudioParameterFloat)
+        /wd4244  # Disable conversion warnings (RubberBand Options)
+    )
+endif()
+
 target_link_libraries(reTunerApp PRIVATE
     juce::juce_core
     juce::juce_data_structures

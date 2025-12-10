@@ -14,7 +14,8 @@ add_library(rubberband STATIC deps/rubberband/single/RubberBandSingle.cpp)
 target_include_directories(rubberband PUBLIC deps/rubberband)
 
 if(WIN32)
-    target_compile_definitions(rubberband PRIVATE _WIN32)
+    target_compile_definitions(rubberband PRIVATE _WIN32 NOMINMAX)
+
 else()
     target_compile_definitions(rubberband PRIVATE USE_PTHREADS)
 endif()
@@ -86,6 +87,13 @@ target_sources(reTuner PRIVATE
 target_compile_definitions(reTuner PRIVATE
     ${RETUNER_JUCE_OPTIONS}
 )
+
+if(MSVC)
+    target_compile_options(reTuner PRIVATE
+        /wd4996  # Disable deprecation warnings (JUCE AudioParameterFloat)
+        /wd4244  # Disable conversion warnings (RubberBand Options)
+    )
+endif()
 
 target_link_libraries(reTuner 
     PRIVATE
