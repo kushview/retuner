@@ -93,15 +93,25 @@ struct Tuning {
         if (_factory.empty()) {
             _factory = {
                 { "Modern to Verdi (440/432 Hz)", toFrequency (TuningStandard::Modern), toFrequency (TuningStandard::Verdi) },
-                { "Modern to Classical (440/430 Hz)", toFrequency (TuningStandard::Modern), toFrequency (TuningStandard::Classical) },
                 { "Modern to Baroque (440/415 Hz)", toFrequency (TuningStandard::Modern), toFrequency (TuningStandard::Baroque) },
-                { "High to Modern (444/440 Hz)", toFrequency (TuningStandard::High), toFrequency (TuningStandard::Modern) },
-                { "High to Verdi (444/432 Hz)", toFrequency (TuningStandard::High), toFrequency (TuningStandard::Verdi) },
-                { "Classical to Modern (430/440 Hz)", toFrequency (TuningStandard::Classical), toFrequency (TuningStandard::Modern) },
-                { "Classical to Verdi (430/432 Hz)", toFrequency (TuningStandard::Classical), toFrequency (TuningStandard::Verdi) },
-                { "Baroque to Modern (415/440 Hz)", toFrequency (TuningStandard::Baroque), toFrequency (TuningStandard::Modern) },
+                { "Modern to Classical (440/430 Hz)", toFrequency (TuningStandard::Modern), toFrequency (TuningStandard::Classical) },
+                { "Modern to High (440/444 Hz)", toFrequency (TuningStandard::Modern), toFrequency (TuningStandard::High) },
                 { "Baroque to Verdi (415/432 Hz)", toFrequency (TuningStandard::Baroque), toFrequency (TuningStandard::Verdi) },
-                { "Verdi to Modern (432/440 Hz)", toFrequency (TuningStandard::Verdi), toFrequency (TuningStandard::Modern) }
+                { "Baroque to Classical (415/430 Hz)", toFrequency (TuningStandard::Baroque), toFrequency (TuningStandard::Classical) },
+                { "Baroque to High (415/444 Hz)", toFrequency (TuningStandard::Baroque), toFrequency (TuningStandard::High) },
+                { "Baroque to Modern (415/440 Hz)", toFrequency (TuningStandard::Baroque), toFrequency (TuningStandard::Modern) },
+                { "Classical to Verdi (430/432 Hz)", toFrequency (TuningStandard::Classical), toFrequency (TuningStandard::Verdi) },
+                { "Classical to Baroque (430/415 Hz)", toFrequency (TuningStandard::Classical), toFrequency (TuningStandard::Baroque) },
+                { "Classical to High (430/444 Hz)", toFrequency (TuningStandard::Classical), toFrequency (TuningStandard::High) },
+                { "Classical to Modern (430/440 Hz)", toFrequency (TuningStandard::Classical), toFrequency (TuningStandard::Modern) },
+                { "High to Verdi (444/432 Hz)", toFrequency (TuningStandard::High), toFrequency (TuningStandard::Verdi) },
+                { "High to Baroque (444/415 Hz)", toFrequency (TuningStandard::High), toFrequency (TuningStandard::Baroque) },
+                { "High to Classical (444/430 Hz)", toFrequency (TuningStandard::High), toFrequency (TuningStandard::Classical) },
+                { "High to Modern (444/440 Hz)", toFrequency (TuningStandard::High), toFrequency (TuningStandard::Modern) },
+                { "Verdi to Modern (432/440 Hz)", toFrequency (TuningStandard::Verdi), toFrequency (TuningStandard::Modern) },
+                { "Verdi to Baroque (432/415 Hz)", toFrequency (TuningStandard::Verdi), toFrequency (TuningStandard::Baroque) },
+                { "Verdi to Classical (432/430 Hz)", toFrequency (TuningStandard::Verdi), toFrequency (TuningStandard::Classical) },
+                { "Verdi to High (432/444 Hz)", toFrequency (TuningStandard::Verdi), toFrequency (TuningStandard::High) }
             };
         }
         return _factory;
