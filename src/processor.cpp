@@ -107,7 +107,7 @@ void Processor::processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer
 
 bool Processor::hasEditor() const { return true; }
 juce::AudioProcessorEditor* Processor::createEditor() { return new Editor (*this); }
-const juce::String Processor::getName() const { return "ReTuner"; }
+const juce::String Processor::getName() const { return "reTuner"; }
 
 bool Processor::isBusesLayoutSupported (const BusesLayout& layouts) const
 {
