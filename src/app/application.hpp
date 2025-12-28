@@ -76,7 +76,7 @@ public:
     Application() = default;
 
     const juce::String getApplicationName() override { return "reTuner"; }
-    const juce::String getApplicationVersion() override { return "1.0.0"; }
+    const juce::String getApplicationVersion() override { return RETUNER_VERSION; }
     bool moreThanOneInstanceAllowed() override { return true; }
 
     void initialise (const juce::String& commandLine) override;

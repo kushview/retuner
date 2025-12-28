@@ -2,7 +2,6 @@
 juce_add_gui_app(reTunerApp
     COMPANY_NAME "Kushview"
     PRODUCT_NAME "reTuner"
-    VERSION "1.0.0"
     BUNDLE_ID "net.kushview.reTunerApp"
     ICON_BIG "retuner-icon.png"
 )
@@ -55,7 +54,8 @@ target_link_libraries(reTunerApp PRIVATE
 )
 
 target_compile_definitions(reTunerApp PRIVATE
-    "RETUNER_APP=1"
+    RETUNER_APP=1
+    RETUNER_VERSION=\"${PROJECT_VERSION}\"
     ${RETUNER_JUCE_OPTIONS}
 )
 
