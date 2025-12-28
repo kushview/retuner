@@ -92,5 +92,8 @@
         "locale": "cpp",
         "queue": "cpp",
         "__availability": "cpp"
-    }
+    },
+    "C_Cpp.default.compileCommands": [
+        "${workspaceFolder}/build/compile_commands.json"
+    ]
 }
