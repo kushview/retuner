@@ -59,6 +59,10 @@ jobs:
       run: |
         choco install cmake ninja -y
     
+    - name: Setup MSVC environment (Windows)
+      if: runner.os == 'Windows'
+      uses: ilammy/msvc-dev-cmd@v1
+    
     - name: Configure CMake (Windows)
       if: runner.os == 'Windows'
       run: |
