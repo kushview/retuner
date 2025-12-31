@@ -59,7 +59,18 @@ jobs:
       run: |
         choco install cmake ninja -y
     
-    - name: Configure CMake
+    - name: Configure CMake (Windows)
+      if: runner.os == 'Windows'
+      run: |
+        cmake -B build \
+          -G Ninja \
+          -DCMAKE_C_COMPILER=cl \
+          -DCMAKE_CXX_COMPILER=cl \
+          -DCMAKE_BUILD_TYPE=Release \
+          -DCMAKE_INSTALL_PREFIX=/usr/local
+    
+    - name: Configure CMake (Unix)
+      if: runner.os != 'Windows'
       run: |
         cmake -B build \
           -G Ninja \
