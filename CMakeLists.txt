@@ -140,7 +140,13 @@ endif()
 add_subdirectory(src/app)
 add_subdirectory(test)
 
+if(LINUX)
+    install(FILES README.md LICENSE.txt docs/manual.md 
+        DESTINATION "${CMAKE_INSTALL_DATADIR}/retuner")
+endif()
+
 # CPack configuration
+
 set(CPACK_PACKAGE_NAME "reTuner")
 set(CPACK_PACKAGE_VENDOR "Kushview")
 set(CPACK_PACKAGE_CONTACT "Kushview Support <support@kushview.net>")
@@ -154,20 +160,32 @@ set(CPACK_RESOURCE_FILE_README "${PROJECT_SOURCE_DIR}/INSTALLER.txt")
 set(CPACK_RESOURCE_FILE_LICENSE "${PROJECT_SOURCE_DIR}/LICENSE.txt")
 
 if(LINUX)
-    set(CPACK_GENERATOR "TGZ;STGZ;DEB")
+    set(RETUNER_SYSTEM_NAME "linux")
+    string(TOLOWER "${CMAKE_SYSTEM_PROCESSOR}" RETUNER_PROCESSOR)
+    set(CPACK_GENERATOR "TGZ;DEB")
     set(CPACK_ARCHIVE_COMPONENT_INSTALL OFF)
-    set(CPACK_PACKAGING_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
+    set(CPACK_PACKAGING_INSTALL_PREFIX "/usr")
     set(CPACK_DEBIAN_PACKAGE_DEPENDS "libasound2;libfreetype6;libx11-6;libxext6;libxrandr2;libxinerama1;libxcursor1;libcurl4;libgl1;libstdc++6")
 elseif(APPLE)
+    set(RETUNER_SYSTEM_NAME "macos")
+    set(RETUNER_PROCESSOR "universal")
     set(CPACK_GENERATOR "ZIP")
     set(CPACK_ARCHIVE_COMPONENT_INSTALL OFF)
     set(CPACK_SET_DESTDIR OFF)
     set(CPACK_PACKAGING_INSTALL_PREFIX "/")
-else()
+    install(FILES README.md LICENSE.txt docs/manual.md 
+        DESTINATION "${CMAKE_INSTALL_PREFIX}")
+elseif(WIN32)
+    set(RETUNER_SYSTEM_NAME "windows")
+    string(TOLOWER "${CMAKE_SYSTEM_PROCESSOR}" RETUNER_PROCESSOR)
+    set(CPACK_IGNORE_FILES ".*\\.lib$;.*\\.exp$;.*\\.ico$")
     set(CPACK_GENERATOR "ZIP")
     set(CPACK_ARCHIVE_COMPONENT_INSTALL OFF)
     set(CPACK_PACKAGING_INSTALL_PREFIX "/")
+    install(FILES README.md LICENSE.txt docs/manual.md 
+        DESTINATION "${CMAKE_INSTALL_PREFIX}")
 endif()
 
-set(CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_NAME}-${CPACK_PACKAGE_VERSION}-${CMAKE_SYSTEM_NAME}-${CMAKE_SYSTEM_PROCESSOR}")
+set(CPACK_PACKAGE_FILE_NAME "${PROJECT_NAME}-${CPACK_PACKAGE_VERSION}-${RETUNER_SYSTEM_NAME}-${RETUNER_PROCESSOR}")
 include(CPack)
+

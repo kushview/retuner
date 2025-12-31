@@ -59,10 +59,12 @@ target_compile_definitions(reTunerApp PRIVATE
     ${RETUNER_JUCE_OPTIONS}
 )
 
-set_target_properties(reTunerApp PROPERTIES
-    OUTPUT_NAME "reTuner"
-    FOLDER "Applications"
-)
+if(LINUX)
+    # Linux conventions want all lowercase executable names
+    set_target_properties(reTunerApp PROPERTIES
+        OUTPUT_NAME "retuner"
+    )
+endif()
 
 if(NOT APPLE)
     install(TARGETS reTunerApp DESTINATION ${CMAKE_INSTALL_BINDIR})
