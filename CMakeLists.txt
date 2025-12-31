@@ -7,6 +7,18 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 set(CMAKE_OSX_ARCHITECTURES arm64;x86_64)
 set(CMAKE_OSX_DEPLOYMENT_TARGET "10.13")
 
+# Enable ccache if available
+find_program(CCACHE_PROGRAM ccache)
+if(CCACHE_PROGRAM)
+    message(STATUS "Found ccache: ${CCACHE_PROGRAM}")
+    set(CMAKE_C_COMPILER_LAUNCHER "${CCACHE_PROGRAM}")
+    set(CMAKE_CXX_COMPILER_LAUNCHER "${CCACHE_PROGRAM}")
+else()
+    message(STATUS "ccache not found")
+endif()
+
+include(GNUInstallDirs)
+
 enable_testing()
 
 ## Rubberband
@@ -29,7 +41,7 @@ endif()
 ## JUCE
 add_subdirectory(deps/JUCE EXCLUDE_FROM_ALL)
 set_directory_properties(PROPERTIES JUCE_COMPANY_NAME Kushview)
-set_directory_properties(PROPERTIES JUCE_COMPANY_COPYRIGHT "Copyright (c) 2025 Kushview, LLC")
+set_directory_properties(PROPERTIES JUCE_COMPANY_COPYRIGHT "Copyright (c) Kushview, LLC")
 set_directory_properties(PROPERTIES JUCE_COMPANY_WEBSITE "https://kushview.net")
 set_directory_properties(PROPERTIES JUCE_COMPANY_EMAIL "support@kushview.net")
 
@@ -95,6 +107,12 @@ if(MSVC)
     )
 endif()
 
+if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+    target_compile_options(reTuner PRIVATE
+        -Wno-multichar  # Ignore multi-character character constant warning
+    )
+endif()
+
 target_link_libraries(reTuner 
     PRIVATE
         juce::juce_audio_processors
@@ -104,5 +122,52 @@ target_link_libraries(reTuner
         rubberband
 )
 
+if(LINUX OR WIN32)
+    install(TARGETS reTuner_CLAP DESTINATION "${CMAKE_INSTALL_LIBDIR}/clap")
+    install(DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/reTuner_artefacts/$<CONFIG>/LV2/"
+        DESTINATION "${CMAKE_INSTALL_LIBDIR}/lv2")
+    install(DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/reTuner_artefacts/$<CONFIG>/VST3/"
+        DESTINATION "${CMAKE_INSTALL_LIBDIR}/vst3")
+elseif(APPLE)
+    install(TARGETS "reTuner_AU"   LIBRARY DESTINATION "Library/Audio/Plug-Ins/Components")
+    install(TARGETS "reTuner_CLAP" LIBRARY DESTINATION "Library/Audio/Plug-Ins/CLAP")
+    install(TARGETS "reTuner_VST3" LIBRARY DESTINATION "Library/Audio/Plug-Ins/VST3")
+    # LV2 on macOS isn't a real library bundle.
+    install(DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/reTuner_artefacts/$<CONFIG>/LV2/"
+        DESTINATION "Library/Audio/Plug-Ins/LV2")
+endif()
+
 add_subdirectory(src/app)
 add_subdirectory(test)
+
+# CPack configuration
+set(CPACK_PACKAGE_NAME "reTuner")
+set(CPACK_PACKAGE_VENDOR "Kushview")
+set(CPACK_PACKAGE_CONTACT "Kushview Support <support@kushview.net>")
+set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "reTuner - Music retuning application and plugins")
+set(CPACK_PACKAGE_VERSION "${PROJECT_VERSION}")
+set(CPACK_PACKAGE_VERSION_MAJOR "${PROJECT_VERSION_MAJOR}")
+set(CPACK_PACKAGE_VERSION_MINOR "${PROJECT_VERSION_MINOR}")
+set(CPACK_PACKAGE_VERSION_PATCH "${PROJECT_VERSION_PATCH}")
+set(CPACK_PACKAGE_INSTALL_DIRECTORY "reTuner")
+set(CPACK_RESOURCE_FILE_README "${PROJECT_SOURCE_DIR}/INSTALLER.txt")
+set(CPACK_RESOURCE_FILE_LICENSE "${PROJECT_SOURCE_DIR}/LICENSE.txt")
+
+if(LINUX)
+    set(CPACK_GENERATOR "TGZ;STGZ;DEB")
+    set(CPACK_ARCHIVE_COMPONENT_INSTALL OFF)
+    set(CPACK_PACKAGING_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
+    set(CPACK_DEBIAN_PACKAGE_DEPENDS "libasound2;libfreetype6;libx11-6;libxext6;libxrandr2;libxinerama1;libxcursor1;libcurl4;libgl1;libstdc++6")
+elseif(APPLE)
+    set(CPACK_GENERATOR "ZIP")
+    set(CPACK_ARCHIVE_COMPONENT_INSTALL OFF)
+    set(CPACK_SET_DESTDIR OFF)
+    set(CPACK_PACKAGING_INSTALL_PREFIX "/")
+else()
+    set(CPACK_GENERATOR "ZIP")
+    set(CPACK_ARCHIVE_COMPONENT_INSTALL OFF)
+    set(CPACK_PACKAGING_INSTALL_PREFIX "/")
+endif()
+
+set(CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_NAME}-${CPACK_PACKAGE_VERSION}-${CMAKE_SYSTEM_NAME}-${CMAKE_SYSTEM_PROCESSOR}")
+include(CPack)

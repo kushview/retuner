@@ -171,10 +171,10 @@ private:
     void createOrReconfigureStretcher()
     {
         using RBS = RubberBand::RubberBandStretcher;
-        const size_t options = RBS::DefaultOptions
-                               | RBS::OptionProcessRealTime
-                               | RBS::OptionPitchHighConsistency
-                               | RBS::OptionThreadingNever;
+        const size_t options = (size_t) RBS::DefaultOptions
+                               | (size_t) RBS::OptionProcessRealTime
+                               | (size_t) RBS::OptionPitchHighConsistency
+                               | (size_t) RBS::OptionThreadingNever;
 
         auto sampleRate = static_cast<size_t> (juce::roundToInt (_sampleRate));
         auto channelCount = static_cast<size_t> (_numChannels);

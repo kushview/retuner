@@ -63,3 +63,11 @@ set_target_properties(reTunerApp PROPERTIES
     OUTPUT_NAME "reTuner"
     FOLDER "Applications"
 )
+
+if(NOT APPLE)
+    install(TARGETS reTunerApp DESTINATION ${CMAKE_INSTALL_BINDIR})
+else()
+    install(TARGETS reTunerApp
+        BUNDLE DESTINATION "Applications"
+        COMPONENT "Standalone")
+endif()
