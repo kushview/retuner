@@ -114,7 +114,7 @@ jobs:
     - name: Prepare release files
       run: |
         mkdir -p release-files
-        find artifacts -type f \( -name "*.sh" -o -name "*.tar.gz" -o -name "*.deb" -o -name "*.zip" -o -name "*.dmg" \) -exec cp {} release-files/ \;
+        find artifacts -type f \( -name "*.sh" -o -name "*.tar.gz" -o -name "*.deb" -o -name "*.zip" -o -name "*.dmg" -o -name "*.pkg" \) -exec cp {} release-files/ \;
         ls -la release-files/
     
     - name: Create Release
