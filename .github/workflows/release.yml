@@ -66,13 +66,14 @@ jobs:
     
     - name: Configure CMake (Windows)
       if: runner.os == 'Windows'
-      run: cmake -B build -G Ninja -DCMAKE_C_COMPILER=cl -DCMAKE_CXX_COMPILER=cl -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="/"
+      run: cmake -B build -G Ninja -DCMAKE_C_COMPILER=cl -DCMAKE_CXX_COMPILER=cl -DCMAKE_BUILD_TYPE=Release -DRETUNER_CPACK=ON -DCMAKE_INSTALL_PREFIX="/"
     
     - name: Configure CMake (macOS)
       if: runner.os == 'macOS'
       run: |
         cmake -B build \
           -G Ninja \
+          -DRETUNER_CPACK=ON \
           -DCMAKE_BUILD_TYPE=Release \
           -DCMAKE_INSTALL_PREFIX="/"
 
@@ -81,6 +82,7 @@ jobs:
       run: |
         cmake -B build \
           -G Ninja \
+          -DRETUNER_CPACK=ON \
           -DCMAKE_BUILD_TYPE=Release \
           -DCMAKE_INSTALL_PREFIX=/usr
     
