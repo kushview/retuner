@@ -66,9 +66,3 @@ if(LINUX)
     )
 endif()
 
-if(NOT APPLE)
-    install(TARGETS reTunerApp DESTINATION ${CMAKE_INSTALL_BINDIR})
-else()
-    install(TARGETS reTunerApp
-        BUNDLE DESTINATION "${CMAKE_INSTALL_PREFIX}")
-endif()

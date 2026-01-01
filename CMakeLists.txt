@@ -1,6 +1,9 @@
 cmake_minimum_required(VERSION 3.21)
 project(retuner VERSION 1.1.0)
 
+option(RETUNER_CPACK "Setup the build for CPack" OFF)
+option(RETUNER_DMG "Build a DMG instead of a Mac Installer pkg" OFF)
+
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 set(CMAKE_OSX_ARCHITECTURES arm64;x86_64)
@@ -118,23 +121,7 @@ target_link_libraries(reTuner
         juce::juce_dsp
         juce::juce_recommended_config_flags
         juce::juce_recommended_lto_flags
-        rubberband
-)
-
-if(LINUX OR WIN32)
-    install(TARGETS reTuner_CLAP DESTINATION "${CMAKE_INSTALL_LIBDIR}/clap")
-    install(DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/reTuner_artefacts/$<CONFIG>/LV2/"
-        DESTINATION "${CMAKE_INSTALL_LIBDIR}/lv2")
-    install(DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/reTuner_artefacts/$<CONFIG>/VST3/"
-        DESTINATION "${CMAKE_INSTALL_LIBDIR}/vst3")
-elseif(APPLE)
-    install(TARGETS "reTuner_AU"   LIBRARY DESTINATION "Plug-Ins/AU")
-    install(TARGETS "reTuner_CLAP" LIBRARY DESTINATION "Plug-Ins/CLAP")
-    install(TARGETS "reTuner_VST3" LIBRARY DESTINATION "Plug-Ins/VST3")
-    # LV2 on macOS isn't a real library bundle.
-    install(DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/reTuner_artefacts/$<CONFIG>/LV2/"
-        DESTINATION "Plug-Ins/LV2")
-endif()
+        rubberband)
 
 find_program(PANDOC_EXECUTABLE pandoc)
 if(PANDOC_EXECUTABLE)
@@ -148,15 +135,7 @@ if(PANDOC_EXECUTABLE)
         COMMENT "Generating the manual with pandoc"
         VERBATIM
         BYPRODUCTS
-            "${CMAKE_BINARY_DIR}/manual.html"
-    )
-    if(LINUX)
-        install(FILES "${CMAKE_BINARY_DIR}/manual.html"
-            DESTINATION "${CMAKE_INSTALL_DATADIR}/retuner")
-    else()
-        install(FILES "${CMAKE_BINARY_DIR}/manual.html"
-            DESTINATION "${CMAKE_INSTALL_PREFIX}")
-    endif()
+            "${CMAKE_BINARY_DIR}/manual.html")
 else()
     message(STATUS "pandoc not found - documentation target will not be available")
 endif()
@@ -164,48 +143,16 @@ endif()
 add_subdirectory(src/app)
 add_subdirectory(test)
 
+# Installation
 if(LINUX)
-    install(FILES LICENSE.txt DESTINATION "${CMAKE_INSTALL_DATADIR}/retuner")
-else()
-    install(FILES LICENSE.txt DESTINATION "${CMAKE_INSTALL_PREFIX}")
+    include(cmake/InstallUnix.cmake)
+elseif(APPLE)
+    include(cmake/InstallMacOS.cmake)
+elseif(WIN32)
+    include(cmake/InstallWindows.cmake)
 endif()
 
 # CPack configuration
-
-set(CPACK_PACKAGE_NAME "reTuner")
-set(CPACK_PACKAGE_VENDOR "Kushview")
-set(CPACK_PACKAGE_CONTACT "Kushview Support <support@kushview.net>")
-set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "reTuner - Music retuning application and plugins")
-set(CPACK_PACKAGE_VERSION "${PROJECT_VERSION}")
-set(CPACK_PACKAGE_VERSION_MAJOR "${PROJECT_VERSION_MAJOR}")
-set(CPACK_PACKAGE_VERSION_MINOR "${PROJECT_VERSION_MINOR}")
-set(CPACK_PACKAGE_VERSION_PATCH "${PROJECT_VERSION_PATCH}")
-set(CPACK_PACKAGE_INSTALL_DIRECTORY "reTuner")
-set(CPACK_RESOURCE_FILE_README "${PROJECT_SOURCE_DIR}/INSTALLER.txt")
-set(CPACK_RESOURCE_FILE_LICENSE "${PROJECT_SOURCE_DIR}/LICENSE.txt")
-
-if(LINUX)
-    set(RETUNER_SYSTEM_NAME "linux")
-    string(TOLOWER "${CMAKE_SYSTEM_PROCESSOR}" RETUNER_PROCESSOR)
-    set(CPACK_GENERATOR "DEB")
-    set(CPACK_ARCHIVE_COMPONENT_INSTALL OFF)
-    set(CPACK_PACKAGING_INSTALL_PREFIX "/usr")
-    set(CPACK_DEBIAN_PACKAGE_DEPENDS "libasound2;libfreetype6;libx11-6;libxext6;libxrandr2;libxinerama1;libxcursor1;libcurl4;libgl1;libstdc++6")
-elseif(APPLE)
-    set(RETUNER_SYSTEM_NAME "macos")
-    set(RETUNER_PROCESSOR "universal")
-    set(CPACK_GENERATOR "DragNDrop")
-    set(CPACK_ARCHIVE_COMPONENT_INSTALL OFF)
-    set(CPACK_SET_DESTDIR ON)
-    set(CPACK_PACKAGING_INSTALL_PREFIX "/")
-elseif(WIN32)
-    set(RETUNER_SYSTEM_NAME "windows")
-    string(TOLOWER "${CMAKE_SYSTEM_PROCESSOR}" RETUNER_PROCESSOR)
-    set(CPACK_IGNORE_FILES ".*\\.lib$;.*\\.exp$;.*\\.ico$")
-    set(CPACK_GENERATOR "ZIP")
-    set(CPACK_ARCHIVE_COMPONENT_INSTALL OFF)
-    set(CPACK_PACKAGING_INSTALL_PREFIX "/")
+if(RETUNER_CPACK)
+    include(cmake/Packaging.cmake)
 endif()
-
-set(CPACK_PACKAGE_FILE_NAME "${PROJECT_NAME}-${CPACK_PACKAGE_VERSION}-${RETUNER_SYSTEM_NAME}-${RETUNER_PROCESSOR}")
-include(CPack)
