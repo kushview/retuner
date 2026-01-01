@@ -35,10 +35,6 @@ elseif(APPLE)
 elseif(WIN32)
     set(RETUNER_SYSTEM_NAME "windows")
     string(TOLOWER "${CMAKE_SYSTEM_PROCESSOR}" RETUNER_PROCESSOR)
-    set(CPACK_IGNORE_FILES
-        "/\\.lib$"
-        "/\\.exp$"
-        "/\\.ico$")
     set(CPACK_GENERATOR "ZIP")
     set(CPACK_ARCHIVE_COMPONENT_INSTALL ON)
     set(CPACK_PACKAGING_INSTALL_PREFIX "/")
