@@ -33,6 +33,7 @@ jobs:
           build-essential \
           cmake \
           ninja-build \
+          pandoc \
           libasound2-dev \
           libjack-jackd2-dev \
           ladspa-sdk \
@@ -52,12 +53,12 @@ jobs:
     - name: Install dependencies (macOS)
       if: runner.os == 'macOS'
       run: |
-        brew install cmake ninja
+        brew install cmake ninja pandoc
     
     - name: Install dependencies (Windows)
       if: runner.os == 'Windows'
       run: |
-        choco install cmake ninja -y
+        choco install cmake ninja pandoc -y
     
     - name: Setup MSVC environment (Windows)
       if: runner.os == 'Windows'

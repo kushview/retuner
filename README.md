@@ -4,7 +4,7 @@ reTuner is a precision audio pitch shifting plugin designed to convert music bet
 
 ![Screenshot](docs/screenshot.png)
 
-Built with [JUCE](https://juce.com/) and [Rubber Band Library](https://breakfastquay.com/rubberband/).
+Built with [JUCE](https://juce.com/) and [Rubber Band](https://breakfastquay.com/rubberband/).
 
 ## Features
 
@@ -56,8 +56,21 @@ git submodule update --init --recursive
     ```
 
 ## Installation
+### Linux
+Note: You might need `sudo` depending on your prefix:
+```sh
+cmake --install build
+```
 
-After building, the artifacts can be found in the `reTuner_artefacts` directory for plugins or `build/reTunerApp_artefacts` for the standalone application.
+### Mac an PC
+**WARNING** 
+_Do not_ use `cmake --install ...` to install apps and plugins on these platforms.  cmake install for these platforms is set up to work well with cpack, not system installation.  Use at your own peril.
+
+**INSTEAD** 
+After building, the artifacts can be found in the `build/reTuner_artefacts` directory for plugins and `build/src/app/reTunerApp_artefacts` for the standalone application. Just manually copy them where you want them.
+
+**OR**
+You can use JUCE's [copy plugin options in cmake](deps/JUCE/docs/CMake%20API.md). Search for `COPY_PLUGIN_AFTER_BUILD` in the JUCE docs for details. Note that this option won't copy the standalone application (`reTuner.app` or `reTuner.exe`), and may fail on Windows when copying to system directories.
 
 ## License
 

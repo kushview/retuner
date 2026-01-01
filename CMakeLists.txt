@@ -1,4 +1,3 @@
-
 cmake_minimum_required(VERSION 3.21)
 project(retuner VERSION 1.1.0)
 
@@ -129,20 +128,46 @@ if(LINUX OR WIN32)
     install(DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/reTuner_artefacts/$<CONFIG>/VST3/"
         DESTINATION "${CMAKE_INSTALL_LIBDIR}/vst3")
 elseif(APPLE)
-    install(TARGETS "reTuner_AU"   LIBRARY DESTINATION "Library/Audio/Plug-Ins/Components")
-    install(TARGETS "reTuner_CLAP" LIBRARY DESTINATION "Library/Audio/Plug-Ins/CLAP")
-    install(TARGETS "reTuner_VST3" LIBRARY DESTINATION "Library/Audio/Plug-Ins/VST3")
+    install(TARGETS "reTuner_AU"   LIBRARY DESTINATION "Plug-Ins/AU")
+    install(TARGETS "reTuner_CLAP" LIBRARY DESTINATION "Plug-Ins/CLAP")
+    install(TARGETS "reTuner_VST3" LIBRARY DESTINATION "Plug-Ins/VST3")
     # LV2 on macOS isn't a real library bundle.
     install(DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/reTuner_artefacts/$<CONFIG>/LV2/"
-        DESTINATION "Library/Audio/Plug-Ins/LV2")
+        DESTINATION "Plug-Ins/LV2")
+endif()
+
+find_program(PANDOC_EXECUTABLE pandoc)
+if(PANDOC_EXECUTABLE)
+    message(STATUS "Found pandoc: ${PANDOC_EXECUTABLE}")
+    
+    add_custom_target(reTunerManual ALL
+        COMMAND ${PANDOC_EXECUTABLE}
+            -o "${CMAKE_BINARY_DIR}/manual.html"
+            --standalone
+            "${CMAKE_SOURCE_DIR}/docs/manual.md"
+        COMMENT "Generating the manual with pandoc"
+        VERBATIM
+        BYPRODUCTS
+            "${CMAKE_BINARY_DIR}/manual.html"
+    )
+    if(LINUX)
+        install(FILES "${CMAKE_BINARY_DIR}/manual.html"
+            DESTINATION "${CMAKE_INSTALL_DATADIR}/retuner")
+    else()
+        install(FILES "${CMAKE_BINARY_DIR}/manual.html"
+            DESTINATION "${CMAKE_INSTALL_PREFIX}")
+    endif()
+else()
+    message(STATUS "pandoc not found - documentation target will not be available")
 endif()
 
 add_subdirectory(src/app)
 add_subdirectory(test)
 
 if(LINUX)
-    install(FILES README.md LICENSE.txt docs/manual.md 
-        DESTINATION "${CMAKE_INSTALL_DATADIR}/retuner")
+    install(FILES LICENSE.txt DESTINATION "${CMAKE_INSTALL_DATADIR}/retuner")
+else()
+    install(FILES LICENSE.txt DESTINATION "${CMAKE_INSTALL_PREFIX}")
 endif()
 
 # CPack configuration
@@ -162,19 +187,17 @@ set(CPACK_RESOURCE_FILE_LICENSE "${PROJECT_SOURCE_DIR}/LICENSE.txt")
 if(LINUX)
     set(RETUNER_SYSTEM_NAME "linux")
     string(TOLOWER "${CMAKE_SYSTEM_PROCESSOR}" RETUNER_PROCESSOR)
-    set(CPACK_GENERATOR "TGZ;DEB")
+    set(CPACK_GENERATOR "DEB")
     set(CPACK_ARCHIVE_COMPONENT_INSTALL OFF)
     set(CPACK_PACKAGING_INSTALL_PREFIX "/usr")
     set(CPACK_DEBIAN_PACKAGE_DEPENDS "libasound2;libfreetype6;libx11-6;libxext6;libxrandr2;libxinerama1;libxcursor1;libcurl4;libgl1;libstdc++6")
 elseif(APPLE)
     set(RETUNER_SYSTEM_NAME "macos")
     set(RETUNER_PROCESSOR "universal")
-    set(CPACK_GENERATOR "ZIP")
+    set(CPACK_GENERATOR "DragNDrop")
     set(CPACK_ARCHIVE_COMPONENT_INSTALL OFF)
-    set(CPACK_SET_DESTDIR OFF)
+    set(CPACK_SET_DESTDIR ON)
     set(CPACK_PACKAGING_INSTALL_PREFIX "/")
-    install(FILES README.md LICENSE.txt docs/manual.md 
-        DESTINATION "${CMAKE_INSTALL_PREFIX}")
 elseif(WIN32)
     set(RETUNER_SYSTEM_NAME "windows")
     string(TOLOWER "${CMAKE_SYSTEM_PROCESSOR}" RETUNER_PROCESSOR)
@@ -182,10 +205,7 @@ elseif(WIN32)
     set(CPACK_GENERATOR "ZIP")
     set(CPACK_ARCHIVE_COMPONENT_INSTALL OFF)
     set(CPACK_PACKAGING_INSTALL_PREFIX "/")
-    install(FILES README.md LICENSE.txt docs/manual.md 
-        DESTINATION "${CMAKE_INSTALL_PREFIX}")
 endif()
 
 set(CPACK_PACKAGE_FILE_NAME "${PROJECT_NAME}-${CPACK_PACKAGE_VERSION}-${RETUNER_SYSTEM_NAME}-${RETUNER_PROCESSOR}")
 include(CPack)
-
