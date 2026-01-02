@@ -64,6 +64,25 @@ if(LINUX)
     set_target_properties(reTunerApp PROPERTIES
         OUTPUT_NAME "retuner"
     )
+    
+    # Configure and install desktop file
+    configure_file(
+        ${CMAKE_CURRENT_SOURCE_DIR}/retuner.desktop.in
+        ${CMAKE_CURRENT_BINARY_DIR}/retuner.desktop
+        @ONLY
+    )
+    
+    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/retuner.desktop
+        DESTINATION ${CMAKE_INSTALL_DATADIR}/applications
+    )
+    
+    # Install icon if available
+    if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/retuner-icon.png)
+        install(FILES retuner-icon.png
+            DESTINATION ${CMAKE_INSTALL_DATADIR}/icons/hicolor/512x512/apps
+            RENAME retuner.png
+        )
+    endif()
 endif()
 
 if(NOT APPLE)
