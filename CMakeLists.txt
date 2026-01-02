@@ -4,6 +4,8 @@ project(retuner VERSION 1.1.0)
 option(RETUNER_CPACK "Setup the build for CPack" OFF)
 option(RETUNER_DMG "Build a DMG instead of a Mac Installer pkg" OFF)
 
+set(RETUNER_DESCRIPTION_SUMMARY, "A music retuning application and plugins")
+
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 set(CMAKE_OSX_ARCHITECTURES arm64;x86_64)

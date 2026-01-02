@@ -1,0 +1,10 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=reTuner
+Comment=@RETUNER_DESCRIPTION_SUMMARY@
+Exec=@CMAKE_INSTALL_FULL_BINDIR@/retuner
+Icon=retuner
+Terminal=false
+Categories=AudioVideo;Audio;
+Keywords=audio;tuning;generator;test;tone;
