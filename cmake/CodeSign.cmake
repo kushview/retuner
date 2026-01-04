@@ -22,8 +22,8 @@ if(APPLE)
     set(LV2_SO "${ARTIFACTS_DIR}/LV2/KV-reTuner.lv2/libKV-reTuner.so")
     set(STANDALONE_APP "${PROJECT_BINARY_DIR}/src/app/reTunerApp_artefacts/$<CONFIG>/reTuner.app")
     
-    # Create codesign-all target
-    add_custom_target(codesign-all echo "Signing AU bundle..."
+    add_custom_target(sign-products  
+        COMMAND echo "Signing AU bundle..."
         COMMAND codesign --force --deep --sign "${CODE_SIGN_IDENTITY}" 
             --timestamp --options runtime --entitlements "${ENTITLEMENTS_FILE}" "${AU_BUNDLE}"
         COMMAND codesign --verify --deep --strict "${AU_BUNDLE}"
