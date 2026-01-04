@@ -154,6 +154,9 @@ elseif(WIN32)
     include(cmake/InstallWindows.cmake)
 endif()
 
+# Code Signing
+include(cmake/CodeSign.cmake)
+
 # CPack configuration
 if(RETUNER_CPACK)
     include(cmake/Packaging.cmake)
