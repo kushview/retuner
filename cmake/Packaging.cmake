@@ -40,6 +40,13 @@ elseif(WIN32)
         set(CPACK_NSIS_CLAP_INSTALL_DIRECTORY "$COMMONFILES64\\\\CLAP")
         set(CPACK_NSIS_LV2_INSTALL_DIRECTORY "$COMMONFILES64\\\\LV2")
         set(CPACK_NSIS_VST3_INSTALL_DIRECTORY "$COMMONFILES64\\\\VST3")
+
+        # Sign the uninstaller using !uninstfinalize
+        if(SIGNTOOL_CMD)
+            message(STATUS "NSIS: sign uninstaller")
+            string(REPLACE ";" " " SIGNTOOL_CMD_STR "${SIGNTOOL_CMD}")
+            set(CPACK_NSIS_DEFINES "!uninstfinalize '${SIGNTOOL_CMD_STR} \"%1\"'")
+        endif()
     else()
         set(CPACK_GENERATOR "ZIP")
         set(CPACK_SET_DESTDIR OFF)

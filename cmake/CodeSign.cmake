@@ -121,7 +121,7 @@ elseif(WIN32)
                 /td SHA256 
                 /dlib "${TRUSTED_SIGNING_DLIB}" 
                 /dmdf "${METADATA_FILE}")
-            set(SIGNTOOL_CMD "${SIGNTOOL_CMD}" PARENT_SCOPE)
+            # set(SIGNTOOL_CMD "${SIGNTOOL_CMD}" PARENT_SCOPE)
             
             add_custom_target(sign-products
                 COMMAND ${SIGNTOOL_CMD} "${VST3_BINARY}"
