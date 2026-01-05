@@ -35,13 +35,13 @@ When working with this codebase, be aware of these critical audio development co
 - CMake-based build that generates platform-specific project files
 - Cross-platform considerations for Windows, macOS, and Linux
 - Bundle packaging via Python scripts (`utils/artifacts.py`)
+- Make sure to `cd` in to the build directory when using the cmake option `--build .`
 
 ## Key Components
-- **docs/retuner-mockup-00.png**: UI Mockup Design
 - **processor.cpp/.hpp**: Audio DSP code and parameter handling
 - **editor.cpp/.hpp**: GUI implementation
+- **src/app/*.***: Standalon application code
 - **CMakeLists.txt**: Build configuration
-- **artifacts.py**: Build artifact packaging script
 
 ## Performance Considerations
 - Audio processing must be efficient and avoid allocations

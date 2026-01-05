@@ -5,3 +5,4 @@
 *.exe
 .DS_Store
 /utils/codesign.env
+/utils/apple.env

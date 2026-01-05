@@ -1,6 +1,6 @@
 if(APPLE)   
     # Code signing identity - check CMake variable, then environment, default to ad-hoc
-    if(NOT DEFINED CODE_SIGN_IDENTITY)
+    if(NOT CODE_SIGN_IDENTITY)
         if(DEFINED ENV{CODE_SIGN_IDENTITY})
             set(CODE_SIGN_IDENTITY "$ENV{CODE_SIGN_IDENTITY}")
         else()

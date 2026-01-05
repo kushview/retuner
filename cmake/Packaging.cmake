@@ -35,6 +35,7 @@ endif()
 
 set(RETUNER_GENERATOR ${CPACK_GENERATOR})
 set(CPACK_PACKAGE_FILE_NAME "${PROJECT_NAME}-${CPACK_PACKAGE_VERSION}-${RETUNER_SYSTEM_NAME}-${RETUNER_PROCESSOR}")
+set(RETUNER_PACKAGE_FILE_NAME "${CPACK_PACKAGE_FILE_NAME}")
 include(CPack)
 
 add_custom_target(installer
@@ -44,6 +45,10 @@ add_custom_target(installer
     COMMENT "Cleaning CPack staging and building package"
     VERBATIM
     USES_TERMINAL)
+
+if(APPLE)
+    add_dependencies(installer sign-products)
+endif()
 
 if("productbuild" IN_LIST RETUNER_GENERATOR OR RETUNER_GENERATOR STREQUAL "productbuild")
     cpack_add_component(AU
@@ -70,26 +75,43 @@ endif()
 
 # Signing and notarization targets for macOS
 if(APPLE)
-    set(NOTARIZE_FILE "${PROJECT_BINARY_DIR}/${CPACK_PACKAGE_FILE_NAME}.pkg")
-    set(UNSIGNED_PKG "${PROJECT_BINARY_DIR}/${CPACK_PACKAGE_FILE_NAME}-unsigned.pkg")
+    set(NOTARIZE_FILE "${PROJECT_BINARY_DIR}/${RETUNER_PACKAGE_FILE_NAME}.pkg")
+    set(UNSIGNED_PKG "${PROJECT_BINARY_DIR}/${RETUNER_PACKAGE_FILE_NAME}-unsigned.pkg")
+
+    if(NOT INSTALLER_SIGN_IDENTITY)
+        set(INSTALLER_SIGN_IDENTITY $ENV{INSTALLER_SIGN_IDENTITY})
+    endif()
+    
+    if(NOT APPLE_ID)
+        set(APPLE_ID $ENV{APPLE_ID})
+    endif()
+    
+    if(NOT TEAM_ID)
+        set(TEAM_ID $ENV{TEAM_ID})
+    endif()
+    
+    if(NOT APP_PASSWORD)
+        set(APP_PASSWORD $ENV{APP_PASSWORD})
+    endif()
 
     # Sign the installer package (uses productsign)
     add_custom_target(sign-installer
         COMMAND echo "Signing installer package..."
         COMMAND ${CMAKE_COMMAND} -E rename "${NOTARIZE_FILE}" "${UNSIGNED_PKG}"
-        COMMAND productsign --sign "$ENV{INSTALLER_SIGN_IDENTITY}" "${UNSIGNED_PKG}" "${NOTARIZE_FILE}"
+        COMMAND productsign --sign "${INSTALLER_SIGN_IDENTITY}" "${UNSIGNED_PKG}" "${NOTARIZE_FILE}"
         COMMAND ${CMAKE_COMMAND} -E rm -f "${UNSIGNED_PKG}"
         COMMAND echo "✓ Signed: ${NOTARIZE_FILE}"
         COMMENT "Signing productbuild package with productsign"
         VERBATIM
         USES_TERMINAL)
+    add_dependencies(sign-installer installer)
 
     add_custom_target(notarize
         COMMAND echo "Submitting for notarization: ${NOTARIZE_FILE}"
         COMMAND xcrun notarytool submit "${NOTARIZE_FILE}"
-            --apple-id "$ENV{APPLE_ID}"
-            --team-id "$ENV{TEAM_ID}"
-            --password "$ENV{APP_PASSWORD}"
+            --apple-id "${APPLE_ID}"
+            --team-id "${TEAM_ID}"
+            --password "${APP_PASSWORD}"
             --wait
         COMMAND echo "Stapling notarization ticket..."
         COMMAND xcrun stapler staple "${NOTARIZE_FILE}"
@@ -98,6 +120,5 @@ if(APPLE)
         VERBATIM
         USES_TERMINAL)
 
-    add_dependencies(notarize sign-products installer)
     add_dependencies(notarize sign-installer)
 endif()

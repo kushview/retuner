@@ -70,12 +70,6 @@ juce_add_plugin(reTuner
     LV2URI "https://kushview.net/plugins/retuner"
     VST3_CATEGORIES Fx "Pitch Shift"
     AU_MAIN_TYPE "kAudioUnitType_Effect"
-
-    HARDENED_RUNTIME_ENABLED TRUE
-    HARDENED_RUNTIME_OPTIONS
-        "com.apple.security.cs.allow-jit"
-	    "com.apple.security.cs.disable-library-validation"
-	    "com.apple.security.device.audio-input"
 )
 clap_juce_extensions_plugin(TARGET reTuner
     CLAP_ID "net.kushview.plugins.reTuner"
