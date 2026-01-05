@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.21)
 project(retuner VERSION 1.1.0)
 
 option(RETUNER_CPACK "Setup the build for CPack" OFF)
+option(RETUNER_NSIS "Use the NSIS generator on windows" OFF)
 
 set(RETUNER_DESCRIPTION_SUMMARY, "A music retuning application and plugins")
 

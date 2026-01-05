@@ -1,7 +1,7 @@
 set(CPACK_PACKAGE_NAME "reTuner")
 set(CPACK_PACKAGE_VENDOR "Kushview")
 set(CPACK_PACKAGE_CONTACT "Kushview Support <support@kushview.net>")
-set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "reTuner - Music retuning application and plugins")
+set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "${RETUNER_DESCRIPTION_SUMMARY}")
 set(CPACK_PACKAGE_VERSION "${PROJECT_VERSION}")
 set(CPACK_PACKAGE_VERSION_MAJOR "${PROJECT_VERSION_MAJOR}")
 set(CPACK_PACKAGE_VERSION_MINOR "${PROJECT_VERSION_MINOR}")
@@ -28,12 +28,28 @@ elseif(APPLE)
 elseif(WIN32)
     set(RETUNER_SYSTEM_NAME "windows")
     string(TOLOWER "${CMAKE_SYSTEM_PROCESSOR}" RETUNER_PROCESSOR)
-    set(CPACK_GENERATOR "ZIP")
-    set(CPACK_ARCHIVE_COMPONENT_INSTALL ON)
-    set(CPACK_PACKAGING_INSTALL_PREFIX "/")
+    if(RETUNER_NSIS)
+        set(CPACK_GENERATOR "NSIS")
+        set(CPACK_SET_DESTDIR OFF)
+        set(CPACK_PACKAGE_INSTALL_DIRECTORY "Kushview\\\\reTuner")
+        set(CPACK_COMPONENT_INSTALL ON)
+        set(CPACK_PACKAGING_INSTALL_PREFIX "/")
+        set(CPACK_NSIS_ENABLE_UNINSTALL_BEFORE_INSTALL ON)
+        set(CPACK_NSIS_MODIFY_PATH OFF)
+        set(CPACK_NSIS_PACKAGE_NAME "reTuner")
+        set(CPACK_NSIS_CLAP_INSTALL_DIRECTORY "$COMMONFILES64\\\\CLAP")
+        set(CPACK_NSIS_LV2_INSTALL_DIRECTORY "$COMMONFILES64\\\\LV2")
+        set(CPACK_NSIS_VST3_INSTALL_DIRECTORY "$COMMONFILES64\\\\VST3")
+    else()
+        set(CPACK_GENERATOR "ZIP")
+        set(CPACK_SET_DESTDIR OFF)
+        set(CPACK_ARCHIVE_COMPONENT_INSTALL OFF)
+        set(CPACK_PACKAGING_INSTALL_PREFIX "/")
+    endif()
 endif()
 
 set(RETUNER_GENERATOR ${CPACK_GENERATOR})
+message(STATUS "Using CPack generator: ${RETUNER_GENERATOR}")
 set(CPACK_PACKAGE_FILE_NAME "${PROJECT_NAME}-${CPACK_PACKAGE_VERSION}-${RETUNER_SYSTEM_NAME}-${RETUNER_PROCESSOR}")
 set(RETUNER_PACKAGE_FILE_NAME "${CPACK_PACKAGE_FILE_NAME}")
 include(CPack)
@@ -50,11 +66,14 @@ if(APPLE)
     add_dependencies(installer sign-products)
 endif()
 
-if("productbuild" IN_LIST RETUNER_GENERATOR OR RETUNER_GENERATOR STREQUAL "productbuild")
-    cpack_add_component(AU
-        DISPLAY_NAME "Audio Unit Plugin"
-        DESCRIPTION "Audio Unit (AU) plugin format"
-        OPTIONAL)
+if("productbuild" IN_LIST RETUNER_GENERATOR OR RETUNER_GENERATOR STREQUAL "productbuild"
+    OR "NSIS" IN_LIST RETUNER_GENERATOR OR RETUNER_GENERATOR STREQUAL "NSIS")
+    if(APPLE)
+        cpack_add_component(AU
+            DISPLAY_NAME "Audio Unit Plugin"
+            DESCRIPTION "Audio Unit (AU) plugin format"
+            OPTIONAL)
+    endif()
     cpack_add_component(VST3
         DISPLAY_NAME "VST3 Plugin"
         DESCRIPTION "VST3 plugin format"
@@ -121,4 +140,16 @@ if(APPLE)
         USES_TERMINAL)
 
     add_dependencies(notarize sign-installer)
+elseif(WIN32)
+    if(RETUNER_NSIS AND SIGNTOOL_CMD)
+        set(INSTALLER_FILE "${PROJECT_BINARY_DIR}/${RETUNER_PACKAGE_FILE_NAME}.exe")
+        
+        add_custom_target(sign-installer
+            COMMAND echo "Signing NSIS installer..."
+            COMMAND ${SIGNTOOL_CMD} "${INSTALLER_FILE}"
+            COMMAND echo "✓ Signed installer: ${INSTALLER_FILE}"
+            COMMENT "Signing NSIS installer with Microsoft Trusted Signing"
+            VERBATIM)
+        add_dependencies(sign-installer installer)
+    endif()
 endif()
